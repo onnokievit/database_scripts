@@ -133,7 +133,7 @@ class OptionApp(wrapper.EWrapper, EClient):
         super().tickSnapshotEnd(reqId)
 
         # Get the option data and save it
-        if reqId in self.option_data and reqId < len(all_options):
+        if reqId in self.option_data and reqId >= 0 and reqId < len(all_options):
             row = all_options.loc[reqId]
             data = self.option_data[reqId]
 
@@ -273,16 +273,20 @@ def save_df_to_access_temp(df: pd.DataFrame, conn_str: str):
         return
 
     df_to_write = df.copy()
-    df_to_write['datum'] = pd.Timestamp.now().normalize()
 
     # Ensure correct column order
     columns_order = ['datum', 'asset_rollup', 'optie_strike', 'optie_call_put',
                      'optie_exp_date', 'bid', 'ask', 'last', 'close_price']
     df_to_write = df_to_write.rename(columns={'close': 'close_price'})
+
+    # Add datum column (will be set properly below)
+    df_to_write['datum'] = None
     df_to_write = df_to_write[columns_order]
 
     # Convert datetime to Python datetime objects
-    df_to_write['datum'] = df_to_write['datum'].dt.to_pydatetime()[0]
+    # Use a single datetime value for all rows
+    datum_value = pd.Timestamp.now().normalize().to_pydatetime()
+    df_to_write['datum'] = datum_value
     if pd.api.types.is_datetime64_any_dtype(df_to_write['optie_exp_date']):
         df_to_write['optie_exp_date'] = df_to_write['optie_exp_date'].dt.to_pydatetime()
 
