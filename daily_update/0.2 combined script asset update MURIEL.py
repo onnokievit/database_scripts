@@ -22,6 +22,10 @@ db_path = r"C:\Users\onno\OneDrive\Beleggen\2025 - portefeuille database 02.03 -
 # subprocess.run(['python', '1 C - delete temp stock price table.py'])
 stock_price_time = time.time()
 
+# Optie prijzen ophalen van IBKR (optioneel - uncomment om te activeren)
+# subprocess.run(['python', '2 A - optionprice ibkr fetch 1.0.py', '--db', db_path],cwd=r'C:\python_coding\database_scripts\daily_update\result_per_dag_update')
+option_price_time = time.time()
+
 subprocess.run(['python', '3 asset_berekening_aandelen 1.5.5.py','--date', start_date_str,'--db',db_path],cwd=r'C:\python_coding\database_scripts\daily_update\result_per_dag_update')
 
 asset_berekening_aandelen_time = time.time()
@@ -42,7 +46,8 @@ end_time = time.time()
 elapsed_time = end_time - start_time
 
 print(f"Time taken to run the script: {stock_price_time - start_time} seconds, for stockprices insert naar historicat_data_correct, script 1, A, B, C")
-print(f"Time taken to run the script: {asset_berekening_aandelen_time - stock_price_time} seconds, for aandeel insert naar per_dag_asset_result")
+print(f"Time taken to run the script: {option_price_time - stock_price_time} seconds, for optie prijzen ophalen van IBKR, script 2 A")
+print(f"Time taken to run the script: {asset_berekening_aandelen_time - option_price_time} seconds, for aandeel insert naar per_dag_asset_result")
 print(f"Time taken to run the script: {opties_open_time_deel1 - asset_berekening_aandelen_time} seconds, for optie_open hulptabel bijwerken")
 print(f"Time taken to run the script: {opties_open_time_deel2 - opties_open_time_deel1} seconds, for opties_open insert naar per_dag_asset_result")
 print(f"Time taken to run the script: {opties_closed_time - opties_open_time_deel2} seconds, for opties_closed insert naar per_dag_asset_result")
