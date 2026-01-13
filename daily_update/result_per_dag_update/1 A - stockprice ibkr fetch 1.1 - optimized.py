@@ -9,6 +9,7 @@ from time import time
 import pandas as pd
 import pyodbc
 import random
+import sys
 
 # -------------------------
 # Access connection (READ asset list + WRITE temp table)
@@ -203,11 +204,20 @@ def send_request_for_index(app: TestApp, idx: int):
 
     what_to_show = _what_to_show(contract.secType)
 
+    duration_days = "5 D"
+    try:
+        if len(sys.argv) > 1:
+            days = int(sys.argv[1])
+            if days > 0:
+                duration_days = f"{days} D"
+    except Exception:
+        duration_days = "5 D"
+
     app.reqHistoricalData(
         idx,            # reqId == index (so callbacks map back to all_data)
         contract,
         "",             # endDateTime ("" = now)
-        "5 D",          # duration
+        duration_days,  # duration
         "1 day",        # barSize
         what_to_show,   # whatToShow
         1,              # useRTH
